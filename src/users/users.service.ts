@@ -23,8 +23,9 @@ export class UsersService {
   }
 
   async create(dto: RegisterDto) {
-    const existing = await this.findByEmail(dto.email);
-    if (existing) throw new ConflictException('Email já cadastrado');
+    const userAlreadyExisting = await this.findByEmail(dto.email);
+    if (userAlreadyExisting)
+      throw new ConflictException('Email already registered');
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
 
@@ -35,5 +36,31 @@ export class UsersService {
         passwordHash,
       },
     });
+  }
+
+  async update(
+    id: string,
+    data: { name?: string; email?: string; password?: string },
+  ) {
+    await this.findById(id);
+
+    const updateData: { name?: string; email?: string; passwordHash?: string } =
+      {};
+
+    if (data.name) updateData.name = data.name;
+    if (data.email) updateData.email = data.email;
+    if (data.password)
+      updateData.passwordHash = await bcrypt.hash(data.password, 10);
+
+    return this.prisma.user.update({
+      where: { id },
+      data: updateData,
+    });
+  }
+
+  async delete(id: string) {
+    await this.findById(id);
+
+    return this.prisma.user.delete({ where: { id } });
   }
 }
