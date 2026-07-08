@@ -6,6 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from 'src/auth/dto/register.dto';
 import * as bcrypt from 'bcrypt';
+import { sanitize } from 'src/common/utils/sanitize';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +20,7 @@ export class UsersService {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('User not found.');
 
-    return user;
+    return sanitize(user, ['passwordHash']);
   }
 
   async create(dto: RegisterDto) {
@@ -29,13 +30,15 @@ export class UsersService {
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
 
-    return this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         name: dto.name,
         email: dto.email,
         passwordHash,
       },
     });
+
+    return sanitize(user, ['passwordHash']);
   }
 
   async update(
@@ -52,15 +55,19 @@ export class UsersService {
     if (data.password)
       updateData.passwordHash = await bcrypt.hash(data.password, 10);
 
-    return this.prisma.user.update({
+    const userUpdated = await this.prisma.user.update({
       where: { id },
       data: updateData,
     });
+
+    return sanitize(userUpdated, ['passwordHash']);
   }
 
   async delete(id: string) {
     await this.findById(id);
 
-    return this.prisma.user.delete({ where: { id } });
+    const user = await this.prisma.user.delete({ where: { id } });
+
+    return sanitize(user, ['passwordHash']);
   }
 }
