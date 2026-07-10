@@ -2,6 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { PrismaModule } from './prisma/prisma.module';
+<<<<<<< Updated upstream
+=======
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+>>>>>>> Stashed changes
 
 @Module({
   imports: [
@@ -18,6 +23,11 @@ import { PrismaModule } from './prisma/prisma.module';
       },
     }),
     PrismaModule,
+<<<<<<< Updated upstream
+=======
+    UsersModule,
+    AuthModule,
+>>>>>>> Stashed changes
   ],
 })
 export class AppModule {}
