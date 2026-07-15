@@ -4,16 +4,7 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConflictException, NotFoundException } from '@nestjs/common';
-
-const makeMockUser = (overrides = {}) => ({
-  id: '1',
-  name: 'Will',
-  email: 'will@email.com',
-  passwordHash: 'hash123',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  ...overrides,
-});
+import { makeMockUser } from 'src/common/makeMockUser';
 
 describe('UserService', () => {
   let service: UsersService;
